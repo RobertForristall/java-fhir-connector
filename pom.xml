@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.rforristall.fhir</groupId>
+	<artifactId>fhir-connectors</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>fhir-connectors</name>
+	<description></description>
+	<url />
+	<licenses>
+		<license />
+	</licenses>
+	<developers>
+		<developer />
+	</developers>
+	<scm>
+		<connection />
+		<developerConnection />
+		<tag />
+		<url />
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+		<basename>fhir-connectors-${project.version}</basename>
+	</properties>
+	<dependencies>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>release.version</name>
+							<value>${project.version}</value>
+							<regex>([0-9]+)\.([0-9]+)\.([0-9]+)(.*-SNAPSHOT)?</regex>
+							<replacement>$1.$2.$3</replacement>
+							<failIfNoMatch>true</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>server-package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${basename}</finalName>
+							<descriptors>
+								<descriptor>src/main/assembly/cli.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>docker-filter</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<finalName>docker</finalName>
+									<attach>false</attach>
+									<appendAssemblyId>false</appendAssemblyId>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+									<descriptors>
+										<descriptor>src/main/assembly/docker.xml</descriptor>
+									</descriptors>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.spotify</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>1.0.0</version>
+						<!-- version 1.1.0+ skips 'pom' builds, use 1.0.0 -->
+						<configuration>
+							<serverId>docker</serverId>
+							<registryUrl>https://rforristall.com/fhir-connectors</registryUrl>
+							<imageName>rforristall-fhir/fhir-connectors</imageName>
+						</configuration>
+						<executions>
+							<execution>
+								<id>docker-build</id>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<imageTags>
+										<imageTag>${release.version}</imageTag>
+										<imageTag>${project.version}</imageTag>
+										<imageTag>latest</imageTag>
+									</imageTags>
+									<dockerDirectory>
+										${project.build.directory}/docker</dockerDirectory>
+									<resources>
+										<resource>
+											<directory>
+												${project.build.directory}</directory>
+											<include>${basename}-bin.tar.gz</include>
+											<include>fhir-connectors-0.0.1-SNAPSHOT.jar</include>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.httpcomponents</groupId>
+								<artifactId>httpclient</artifactId>
+								<version>4.5.14</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-compress</artifactId>
+								<version>1.26.1</version>
+							</dependency>
+							<!-- JDK-11 plugin uses 'jersey', requires
+							activation -->
+							<dependency>
+								<groupId>com.sun.activation</groupId>
+								<artifactId>javax.activation</artifactId>
+								<version>1.2.0</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+</project>
