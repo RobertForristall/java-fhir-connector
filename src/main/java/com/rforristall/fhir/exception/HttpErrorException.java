@@ -1,4 +1,4 @@
-package com.rforristall.fhir.util;
+package com.rforristall.fhir.exception;
 
 import java.util.Objects;
 

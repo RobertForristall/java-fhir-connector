@@ -24,8 +24,8 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import com.nimbusds.jwt.SignedJWT;
+import com.rforristall.fhir.exception.HttpErrorException;
 import com.rforristall.fhir.keystore.KeyStoreAccessor;
-import com.rforristall.fhir.util.HttpErrorException;
 
 public class OauthAuthentication extends AbstractFhirAuthentication{
   

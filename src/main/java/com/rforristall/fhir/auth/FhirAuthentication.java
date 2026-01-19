@@ -9,7 +9,7 @@ import java.security.cert.CertificateException;
 import java.text.ParseException;
 
 import com.nimbusds.jose.JOSEException;
-import com.rforristall.fhir.util.HttpErrorException;
+import com.rforristall.fhir.exception.HttpErrorException;
 
 public interface FhirAuthentication {
   
