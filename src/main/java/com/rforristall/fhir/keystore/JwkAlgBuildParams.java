@@ -5,33 +5,28 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWK;
 
 public enum JwkAlgBuildParams {
   
-  RSA(JWSAlgorithm.RS384, "RSA", 2048),
-  EC(JWSAlgorithm.ES256, "EC", 256);
+  RSA(JWSAlgorithm.RS384, "RSA", 2048, "SHA256WithRSAEncryption"),
+  EC(JWSAlgorithm.ES256, "EC", 256, "SHA256withECDSA");
   
   private static final Map<JWSAlgorithm, JwkAlgBuildParams> JABP_BY_MATCHING_STRING =
-          Arrays.stream(values()).collect(ImmutableMap.toImmutableMap(JwkAlgBuildParams::securityAlg, jabp -> jabp));
+          Arrays.stream(values()).collect(ImmutableMap.toImmutableMap(JwkAlgBuildParams::getSecurityAlg, jabp -> jabp));
   
   private JWSAlgorithm securityAlg;
   private String instanceStr;
   private int keySize;
+  private String contentSigner;
   
-  private JwkAlgBuildParams(JWSAlgorithm securityAlg, String instanceStr, int keySize) {
+  private JwkAlgBuildParams(JWSAlgorithm securityAlg, String instanceStr, int keySize, String contentSigner) {
     this.securityAlg = securityAlg;
     this.instanceStr = instanceStr;
     this.keySize = keySize;
+    this.contentSigner = contentSigner;
   }
   
-  private JwkAlgBuildParams(JWSAlgorithm securityAlg, String instanceStr, int keySize, JWK key) {
-    this.securityAlg = securityAlg;
-    this.instanceStr = instanceStr;
-    this.keySize = keySize;
-  }
-  
-  public JWSAlgorithm securityAlg() {
+  public JWSAlgorithm getSecurityAlg() {
     return securityAlg;
   }
   
@@ -41,6 +36,10 @@ public enum JwkAlgBuildParams {
 
   public int getKeySize() {
     return keySize;
+  }
+  
+  public String getContentSigner() {
+    return contentSigner;
   }
 
   public static JwkAlgBuildParams fromJwsAlg(JWSAlgorithm securityAlg) {
