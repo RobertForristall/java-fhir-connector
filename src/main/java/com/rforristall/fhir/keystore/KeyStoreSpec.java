@@ -1,9 +1,12 @@
 package com.rforristall.fhir.keystore;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class KeyStoreSpec {
+  
+  private static final String KEY_SET_FILENAME_TEMPLATE = "key_set_%s.json";
   
   private Path storeDir;
   private String storeFileName;
@@ -50,6 +53,14 @@ public class KeyStoreSpec {
 
   public String getKeyId() {
     return keyId;
+  }
+  
+  public Path getKeyStoreFilePath() {
+    return Paths.get(storeDir.toString(), storeFileName);
+  }
+  
+  public Path getKeySetFilePath() {
+    return Paths.get(storeDir.toString(), KEY_SET_FILENAME_TEMPLATE.formatted(keyAlias));
   }
   
   @Override
