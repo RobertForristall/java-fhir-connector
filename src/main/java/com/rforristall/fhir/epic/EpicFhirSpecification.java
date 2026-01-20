@@ -13,7 +13,6 @@ import com.rforristall.fhir.auth.BasicAuthentication;
 import com.rforristall.fhir.auth.FhirAuthentication;
 import com.rforristall.fhir.auth.OauthAuthentication;
 import com.rforristall.fhir.exception.HttpErrorException;
-import com.rforristall.fhir.hapi.HapiFhirSpecification;
 import com.rforristall.fhir.keystore.KeyStoreAccessor;
 import com.rforristall.fhir.keystore.KeyStoreSpec;
 import com.rforristall.fhir.spec.AbstractFhirSpecification;
