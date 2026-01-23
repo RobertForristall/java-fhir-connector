@@ -1,5 +1,6 @@
 package com.rforristall.fhir.conn;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -12,8 +13,10 @@ public interface FhirConnection {
   /**
    * Execute a request for the FHIR server metadata
    * @return {@link String} JSON representation of the FHIR server metadata
+   * @throws InterruptedException 
+   * @throws IOException 
    */
-  String metadata();
+  String metadata() throws IOException, InterruptedException;
   
   /**
    * Execute read requests to the FHIR server to get information on a single FHIR resource
