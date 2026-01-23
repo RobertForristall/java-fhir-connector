@@ -10,6 +10,12 @@ import java.util.Map;
 public interface FhirConnection {
   
   /**
+   * Execute a request for the FHIR server metadata
+   * @return {@link String} JSON representation of the FHIR server metadata
+   */
+  String metadata();
+  
+  /**
    * Execute read requests to the FHIR server to get information on a single FHIR resource
    * @param resource {@link String}: Name of the FHIR resource to read from
    * @param id {@link String}: Unique ID of the FHIR resource to read
