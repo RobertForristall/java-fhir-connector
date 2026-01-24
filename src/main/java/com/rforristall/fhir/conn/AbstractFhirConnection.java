@@ -49,15 +49,29 @@ public class AbstractFhirConnection implements FhirConnection {
   }
 
   @Override
-  public String read(String resource, String id) {
-    
-    return null;
+  public String read(String resource, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+    HttpResponse<String> response = HttpClient.newHttpClient().send(
+            createBasicRequest(createFhirRoute(resource, id)).GET().build(), 
+            BodyHandlers.ofString());
+    if (response.statusCode() == 200) {
+      return response.body();
+    } else {
+      // Handle failed response code
+      return null;
+    }
   }
 
   @Override
-  public String search(String resource, Map<String, String> params) {
-    // TODO Auto-generated method stub
-    return null;
+  public String search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+    HttpResponse<String> response = HttpClient.newHttpClient().send(
+            createBasicRequest(createFhirRoute(resource, params)).GET().build(), 
+            BodyHandlers.ofString());
+    if (response.statusCode() == 200) {
+      return response.body();
+    } else {
+      // Handle failed response code
+      return null;
+    }
   }
 
   @Override
@@ -79,16 +93,22 @@ public class AbstractFhirConnection implements FhirConnection {
   }
   
   private Builder createBasicRequest(String route) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, ParseException, IOException, JOSEException, InterruptedException, HttpErrorException {
-    Builder requestBuilder = HttpRequest.newBuilder(URI.create(fhirSpec.getHostname()));
+    Builder requestBuilder = HttpRequest.newBuilder(URI.create(fhirSpec.getHostname())).header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE);
     return fhirSpec.getFhirAuth().appendAuthentication(requestBuilder);
   }
   
   private String createFhirRoute(String resource, String id) {
-    return resource + "/" + id;
+    return appendRouteToHostname(resource + "/" + id);
   }
   
   private String createFhirRoute(String resource, Map<String, String> params) {
-    return resource + "?" + toUrlParams(params);
+    return appendRouteToHostname(resource + "?" + toUrlParams(params));
+  }
+  
+  private String appendRouteToHostname(String route) {
+    return fhirSpec.getHostname()
+            + (fhirSpec.getHostname().endsWith("/") ? "" : "/")
+            + route;
   }
   
   private String toUrlParams(Map<String, String> params) {

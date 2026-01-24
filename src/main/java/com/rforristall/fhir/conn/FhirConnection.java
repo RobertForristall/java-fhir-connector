@@ -1,7 +1,15 @@
 package com.rforristall.fhir.conn;
 
 import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.text.ParseException;
 import java.util.Map;
+
+import com.nimbusds.jose.JOSEException;
+import com.rforristall.fhir.exception.HttpErrorException;
 
 /**
  * FHIR Connection interface outlining the basic methods that FHIR connections should allow users to use, implemented by {@link AbstractFhirConnection}
@@ -23,16 +31,34 @@ public interface FhirConnection {
    * @param resource {@link String}: Name of the FHIR resource to read from
    * @param id {@link String}: Unique ID of the FHIR resource to read
    * @return {@link String} JSON representation of the FHIR resource
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
    */
-  String read(String resource, String id);
+  String read(String resource, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
   
   /**
    * Execute search requests to the FHIR server to get information on multiple FHIR resources
    * @param resource {@link String}: Name of the FHIR resource to read from
    * @param params {@link Map}<{@link String}, {@link String}>: Map of search params where the key is the name and value is the value
    * @return {@link String} JSON representation of the FHIR resource bundle
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
    */
-  String search(String resource, Map<String, String> params);
+  String search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
   
   /**
    * Execute create requests to the FHIR server to create new FHIR resources
