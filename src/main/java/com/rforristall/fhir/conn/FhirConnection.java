@@ -24,7 +24,7 @@ public interface FhirConnection {
    * @throws InterruptedException 
    * @throws IOException 
    */
-  String metadata() throws IOException, InterruptedException;
+  String metadata() throws IOException, InterruptedException, HttpErrorException;
   
   /**
    * Execute read requests to the FHIR server to get information on a single FHIR resource

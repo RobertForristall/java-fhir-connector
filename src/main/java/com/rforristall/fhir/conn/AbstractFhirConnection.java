@@ -34,7 +34,7 @@ public class AbstractFhirConnection implements FhirConnection {
   }
   
   @Override
-  public String metadata() throws IOException, InterruptedException {
+  public String metadata() throws IOException, InterruptedException, HttpErrorException {
     HttpRequest.newBuilder(URI.create(fhirSpec.getHostname() + (fhirSpec.getHostname().endsWith("/") ? "" : "/") + "metadata")).GET().header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE).build();
     HttpResponse<String> response = HttpClient.newHttpClient().send(
             HttpRequest.newBuilder(URI.create(fhirSpec.getHostname() + (fhirSpec.getHostname().endsWith("/") ? "" : "/") + "metadata")).GET().header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE).build()
@@ -42,8 +42,7 @@ public class AbstractFhirConnection implements FhirConnection {
     if (response.statusCode() == 200) {
       return response.body();
     } else {
-      // Handle failed response code
-      return null;
+      throw HttpErrorException.createExceptionFromStatusCode(response.statusCode(), response.body());
     }
     
   }
@@ -56,8 +55,7 @@ public class AbstractFhirConnection implements FhirConnection {
     if (response.statusCode() == 200) {
       return response.body();
     } else {
-      // Handle failed response code
-      return null;
+      throw HttpErrorException.createExceptionFromStatusCode(response.statusCode(), response.body());
     }
   }
 
@@ -69,8 +67,7 @@ public class AbstractFhirConnection implements FhirConnection {
     if (response.statusCode() == 200) {
       return response.body();
     } else {
-      // Handle failed response code
-      return null;
+      throw HttpErrorException.createExceptionFromStatusCode(response.statusCode(), response.body());
     }
   }
 
