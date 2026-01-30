@@ -8,7 +8,9 @@ import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.util.Map;
 
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.Resource;
 
 import com.nimbusds.jose.JOSEException;
 import com.rforristall.fhir.exception.HttpErrorException;
@@ -22,7 +24,7 @@ public interface FhirConnection {
   
   /**
    * Execute a request for the FHIR server metadata
-   * @return {@link String} JSON representation of the FHIR server metadata
+   * @return {@link CapabilityStatement} of the FHIR server metadata
    * @throws InterruptedException 
    * @throws IOException 
    */
@@ -32,7 +34,8 @@ public interface FhirConnection {
    * Execute read requests to the FHIR server to get information on a single FHIR resource
    * @param resource {@link String}: Name of the FHIR resource to read from
    * @param id {@link String}: Unique ID of the FHIR resource to read
-   * @return {@link String} JSON representation of the FHIR resource
+   * @param clazz {@link Class}<T extends {@link Resource}>: Class of the resource that is being requested
+   * @return  Object of {@link Class}<T extends {@link Resource}> for the requested resource
    * @throws HttpErrorException 
    * @throws JOSEException 
    * @throws ParseException 
@@ -43,13 +46,13 @@ public interface FhirConnection {
    * @throws NoSuchAlgorithmException 
    * @throws KeyStoreException 
    */
-  String read(String resource, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+  <T extends Resource> T read(String resource, String id, Class<T> clazz) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
   
   /**
    * Execute search requests to the FHIR server to get information on multiple FHIR resources
    * @param resource {@link String}: Name of the FHIR resource to read from
    * @param params {@link Map}<{@link String}, {@link String}>: Map of search params where the key is the name and value is the value
-   * @return {@link String} JSON representation of the FHIR resource bundle
+   * @return  {@link Bundle} of resources returned by the search
    * @throws HttpErrorException 
    * @throws JOSEException 
    * @throws ParseException 
@@ -60,7 +63,7 @@ public interface FhirConnection {
    * @throws NoSuchAlgorithmException 
    * @throws KeyStoreException 
    */
-  String search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+  Bundle search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
   
   /**
    * Execute create requests to the FHIR server to create new FHIR resources

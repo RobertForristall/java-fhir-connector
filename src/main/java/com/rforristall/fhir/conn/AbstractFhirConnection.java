@@ -18,7 +18,9 @@ import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.util.Map;
 
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.Resource;
 
 import com.google.common.net.HttpHeaders;
 import com.nimbusds.jose.JOSEException;
@@ -57,24 +59,24 @@ public class AbstractFhirConnection implements FhirConnection {
   }
 
   @Override
-  public String read(String resource, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+  public <T extends Resource> T read(String resource, String id, Class<T> clazz) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
     HttpResponse<String> response = HttpClient.newHttpClient().send(
             createBasicRequest(createFhirRoute(resource, id)).GET().build(), 
             BodyHandlers.ofString());
     if (response.statusCode() == 200) {
-      return response.body();
+      return parser.parseResource(clazz, response.body());
     } else {
       throw HttpErrorException.createExceptionFromStatusCode(response.statusCode(), response.body());
     }
   }
 
   @Override
-  public String search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+  public Bundle search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
     HttpResponse<String> response = HttpClient.newHttpClient().send(
             createBasicRequest(createFhirRoute(resource, params)).GET().build(), 
             BodyHandlers.ofString());
     if (response.statusCode() == 200) {
-      return response.body();
+      return parser.parseResource(Bundle.class, response.body());
     } else {
       throw HttpErrorException.createExceptionFromStatusCode(response.statusCode(), response.body());
     }
@@ -99,7 +101,7 @@ public class AbstractFhirConnection implements FhirConnection {
   }
   
   private Builder createBasicRequest(String route) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, ParseException, IOException, JOSEException, InterruptedException, HttpErrorException {
-    Builder requestBuilder = HttpRequest.newBuilder(URI.create(fhirSpec.getHostname())).header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE);
+    Builder requestBuilder = HttpRequest.newBuilder(URI.create(route)).header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE);
     return fhirSpec.getFhirAuth().appendAuthentication(requestBuilder);
   }
   
