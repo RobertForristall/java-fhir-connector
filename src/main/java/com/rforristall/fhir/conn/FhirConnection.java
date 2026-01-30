@@ -8,6 +8,8 @@ import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.util.Map;
 
+import org.hl7.fhir.r4.model.CapabilityStatement;
+
 import com.nimbusds.jose.JOSEException;
 import com.rforristall.fhir.exception.HttpErrorException;
 
@@ -24,7 +26,7 @@ public interface FhirConnection {
    * @throws InterruptedException 
    * @throws IOException 
    */
-  String metadata() throws IOException, InterruptedException, HttpErrorException;
+  CapabilityStatement metadata() throws IOException, InterruptedException, HttpErrorException;
   
   /**
    * Execute read requests to the FHIR server to get information on a single FHIR resource

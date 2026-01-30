@@ -18,29 +18,38 @@ import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.util.Map;
 
+import org.hl7.fhir.r4.model.CapabilityStatement;
+
 import com.google.common.net.HttpHeaders;
 import com.nimbusds.jose.JOSEException;
 import com.rforristall.fhir.exception.HttpErrorException;
 import com.rforristall.fhir.spec.FhirSpecification;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 
 public class AbstractFhirConnection implements FhirConnection {
   
   private static final String ACCEPT_HEADER_VALUE = "application/json";
   
   private FhirSpecification fhirSpec;
+  private FhirContext fhirContext;
+  private IParser parser;
   
   protected AbstractFhirConnection(FhirSpecification fhirSpec) {
     this.fhirSpec = fhirSpec;
+    this.fhirContext = fhirSpec.getFhirVersion().getFhirContext();
+    this.parser = this.fhirContext.newJsonParser();
   }
   
   @Override
-  public String metadata() throws IOException, InterruptedException, HttpErrorException {
+  public CapabilityStatement metadata() throws IOException, InterruptedException, HttpErrorException {
     HttpRequest.newBuilder(URI.create(fhirSpec.getHostname() + (fhirSpec.getHostname().endsWith("/") ? "" : "/") + "metadata")).GET().header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE).build();
     HttpResponse<String> response = HttpClient.newHttpClient().send(
             HttpRequest.newBuilder(URI.create(fhirSpec.getHostname() + (fhirSpec.getHostname().endsWith("/") ? "" : "/") + "metadata")).GET().header(HttpHeaders.ACCEPT, ACCEPT_HEADER_VALUE).build()
             , BodyHandlers.ofString());
     if (response.statusCode() == 200) {
-      return response.body();
+      return parser.parseResource(CapabilityStatement.class, response.body());
     } else {
       throw HttpErrorException.createExceptionFromStatusCode(response.statusCode(), response.body());
     }
