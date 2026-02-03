@@ -1,0 +1,137 @@
+package com.rforristall.fhir.conn;
+
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.text.ParseException;
+import java.util.Map;
+
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.Resource;
+
+import com.nimbusds.jose.JOSEException;
+import com.rforristall.fhir.exception.HttpErrorException;
+
+/**
+ * FHIR Connection interface outlining the basic methods that FHIR connections should allow users to use, implemented by {@link AbstractFhirConnection}
+ *
+ * @author Robert Forristall (robert.s.forristall@gmail.com)
+ */
+public interface FhirConnection {
+  
+  /**
+   * Execute a request for the FHIR server metadata
+   * @return {@link CapabilityStatement} of the FHIR server metadata
+   * @throws InterruptedException 
+   * @throws IOException 
+   */
+  CapabilityStatement metadata() throws IOException, InterruptedException, HttpErrorException;
+  
+  /**
+   * Execute read requests to the FHIR server to get information on a single FHIR resource
+   * @param resource {@link String}: Name of the FHIR resource to read from
+   * @param id {@link String}: Unique ID of the FHIR resource to read
+   * @param clazz {@link Class}<T extends {@link Resource}>: Class of the resource that is being requested
+   * @return  Object of {@link Class}<T extends {@link Resource}> for the requested resource
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
+   */
+  <T extends Resource> T read(String resource, String id, Class<T> clazz) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+  
+  /**
+   * Execute search requests to the FHIR server to get information on multiple FHIR resources
+   * @param resource {@link String}: Name of the FHIR resource to read from
+   * @param params {@link Map}<{@link String}, {@link String}>: Map of search params where the key is the name and value is the value
+   * @return  {@link Bundle} of resources returned by the search
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
+   */
+  Bundle search(String resource, Map<String, String> params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+  
+  /**
+   * Execute create requests to the FHIR server to create new FHIR resources
+   * @param resource {@link String}: name of the FHIR resource to create
+   * @param body {@link String}: JSON representation of the FHIR resource to create
+   * @return {@link String} ID of the newly created resource
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
+   */
+  String create(String resource, String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+  
+  /**
+   * Execute update requests to the FHIR server to modify existing FHIR resources
+   * @param resource {@link String}: Name of the FHIR resource to update
+   * @param id {@link String}: Unique ID of the FHIR resource to update
+   * @param body {@link String}: JSON representation of the FHIR resource to update
+   * @return {@link Boolean} true if the update succeeds and false otherwise
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
+   */
+  Boolean update(String resource, String id, String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException; 
+  
+  /**
+   * Execute delete requests to the FHIR server to remove existing FHIR resources
+   * @param resource {@link String}: Name of the FHIR resource to delete
+   * @param id {@link String}: Unique ID of the FHIR resource to delete
+   * @return {@link Boolean} true if the delete succeeds and false otherwise
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
+   */
+  Boolean delete(String resouce, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+
+  /**
+   * Execute patch requests to the FHIR server to modify existing FHIR resources
+   * @param resource {@link String}: Name of the FHIR resource to patch
+   * @param id {@link String}: Unique ID of the FHIR resource to patch
+   * @param body {@link String}: JSON representation of the FHIR resource to patch
+   * @return {@link Boolean} true if the patch succeeds and false otherwise
+   * @throws KeyStoreException
+   * @throws NoSuchAlgorithmException
+   * @throws CertificateException
+   * @throws UnrecoverableEntryException
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ParseException
+   * @throws JOSEException
+   * @throws HttpErrorException
+   */
+  Boolean patch(String resource, String id, String body)throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
+}

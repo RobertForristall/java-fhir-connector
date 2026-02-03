@@ -1,5 +1,8 @@
 package com.rforristall.fhir.spec;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+
 /**
  * Enumeration for different FHIR version that can be connected to
  * 
@@ -16,23 +19,25 @@ package com.rforristall.fhir.spec;
  */
 public enum FhirVersion {
   
-  DSTU2("DSTU2"),
-  STU3("STU3"),
-  R4("R4"),
-  R4B("R4B"),
-  R5("R5");
+  DSTU2("DSTU2", FhirVersionEnum.DSTU2),
+  STU3("STU3", FhirVersionEnum.DSTU3),
+  R4("R4", FhirVersionEnum.R4),
+  R4B("R4B", FhirVersionEnum.R4B),
+  R5("R5", FhirVersionEnum.R5);
 
   /**
    * The human readable name of the FHIR version for use in messages
    */
   private String name;
+  private FhirVersionEnum internalFhirVersion;
   
   /**
    * Private constructor for creating the enumerations with the version's name
    * @param name {@link String} Human readable name of the dialect
    */
-  private FhirVersion(String name) {
+  private FhirVersion(String name, FhirVersionEnum internalFhirVersion) {
     this.name = name;
+    this.internalFhirVersion = internalFhirVersion;
   }
   
   /**
@@ -42,4 +47,10 @@ public enum FhirVersion {
   public String getName() {
     return name;
   }
+  
+  public FhirContext getFhirContext() {
+    return FhirContext.forVersion(internalFhirVersion);
+  }
+  
+  
 }
