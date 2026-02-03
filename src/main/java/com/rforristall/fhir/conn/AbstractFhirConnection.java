@@ -32,7 +32,8 @@ import ca.uhn.fhir.parser.IParser;
 
 public class AbstractFhirConnection implements FhirConnection {
   
-  private static final String ACCEPT_HEADER_VALUE = "application/json";
+  private static final String ACCEPT_HEADER_VALUE = "application/fhir+json";
+  private static final String HEADER_VALUE_NEW_ID = "Location";
   
   private FhirSpecification fhirSpec;
   private FhirContext fhirContext;
@@ -83,21 +84,57 @@ public class AbstractFhirConnection implements FhirConnection {
   }
 
   @Override
-  public String create(String resource, String body) {
-    // TODO Auto-generated method stub
-    return null;
+  public String create(
+          String resource,
+          String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+    HttpResponse<String> response = HttpClient.newHttpClient()
+            .send(
+                    createBasicRequest(createFhirRoute(resource))
+                            .POST(HttpRequest.BodyPublishers.ofString(body))
+                            .build(),
+                    BodyHandlers.ofString());
+    if (response.statusCode() == 201) {
+      return response.headers().firstValue(HEADER_VALUE_NEW_ID).isPresent() ? response.headers().firstValue(HEADER_VALUE_NEW_ID).get().split("/")[1] : null;
+    } else {
+      throw HttpErrorException
+              .createExceptionFromStatusCode(response.statusCode(), response.body());
+    }
   }
 
   @Override
-  public Boolean update(String resource, String id, String body) {
-    // TODO Auto-generated method stub
-    return null;
+  public Boolean update(String resource, String id, String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+    HttpResponse<String> response = HttpClient.newHttpClient().send(createBasicRequest(createFhirRoute(resource, id)).PUT(HttpRequest.BodyPublishers.ofString(body)).build(), BodyHandlers.ofString());
+    if (response.statusCode() == 200) {
+      return true;
+    } else {
+      throw HttpErrorException
+      .createExceptionFromStatusCode(response.statusCode(), response.body());
+    }
   }
 
   @Override
-  public Boolean delete(String resouce, String id) {
-    // TODO Auto-generated method stub
-    return null;
+  public Boolean delete(String resource, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+    HttpResponse<String> response = HttpClient.newHttpClient().send(createBasicRequest(createFhirRoute(resource, id)).DELETE().build(), BodyHandlers.ofString());
+    if (response.statusCode() == 200) {
+      return true;
+    } else {
+      throw HttpErrorException
+      .createExceptionFromStatusCode(response.statusCode(), response.body());
+    }
+  }
+  
+  @Override
+  public Boolean patch(
+          String resource,
+          String id,
+          String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException {
+    HttpResponse<String> response = HttpClient.newHttpClient().send(createBasicRequest(createFhirRoute(resource, id)).method("PATCH", HttpRequest.BodyPublishers.ofString(body)).build(), BodyHandlers.ofString());
+    if (response.statusCode() == 200) {
+      return true;
+    } else {
+      throw HttpErrorException
+      .createExceptionFromStatusCode(response.statusCode(), response.body());
+    }
   }
   
   private Builder createBasicRequest(String route) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, ParseException, IOException, JOSEException, InterruptedException, HttpErrorException {
@@ -111,6 +148,10 @@ public class AbstractFhirConnection implements FhirConnection {
   
   private String createFhirRoute(String resource, Map<String, String> params) {
     return appendRouteToHostname(resource + "?" + toUrlParams(params));
+  }
+  
+  private String createFhirRoute(String resource) {
+    return appendRouteToHostname(resource);
   }
   
   private String appendRouteToHostname(String route) {

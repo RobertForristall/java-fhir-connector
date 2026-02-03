@@ -70,8 +70,17 @@ public interface FhirConnection {
    * @param resource {@link String}: name of the FHIR resource to create
    * @param body {@link String}: JSON representation of the FHIR resource to create
    * @return {@link String} ID of the newly created resource
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
    */
-  String create(String resource, String body);
+  String create(String resource, String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
   
   /**
    * Execute update requests to the FHIR server to modify existing FHIR resources
@@ -79,15 +88,50 @@ public interface FhirConnection {
    * @param id {@link String}: Unique ID of the FHIR resource to update
    * @param body {@link String}: JSON representation of the FHIR resource to update
    * @return {@link Boolean} true if the update succeeds and false otherwise
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
    */
-  Boolean update(String resource, String id, String body); 
+  Boolean update(String resource, String id, String body) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException; 
   
   /**
    * Execute delete requests to the FHIR server to remove existing FHIR resources
    * @param resource {@link String}: Name of the FHIR resource to delete
    * @param id {@link String}: Unique ID of the FHIR resource to delete
    * @return {@link Boolean} true if the delete succeeds and false otherwise
+   * @throws HttpErrorException 
+   * @throws JOSEException 
+   * @throws ParseException 
+   * @throws InterruptedException 
+   * @throws IOException 
+   * @throws UnrecoverableEntryException 
+   * @throws CertificateException 
+   * @throws NoSuchAlgorithmException 
+   * @throws KeyStoreException 
    */
-  Boolean delete(String resouce, String id);
+  Boolean delete(String resouce, String id) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
 
+  /**
+   * Execute patch requests to the FHIR server to modify existing FHIR resources
+   * @param resource {@link String}: Name of the FHIR resource to patch
+   * @param id {@link String}: Unique ID of the FHIR resource to patch
+   * @param body {@link String}: JSON representation of the FHIR resource to patch
+   * @return {@link Boolean} true if the patch succeeds and false otherwise
+   * @throws KeyStoreException
+   * @throws NoSuchAlgorithmException
+   * @throws CertificateException
+   * @throws UnrecoverableEntryException
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ParseException
+   * @throws JOSEException
+   * @throws HttpErrorException
+   */
+  Boolean patch(String resource, String id, String body)throws KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException, IOException, InterruptedException, ParseException, JOSEException, HttpErrorException;
 }
